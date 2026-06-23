@@ -189,7 +189,7 @@ export default function App() {
     } catch { /* silent */ }
   }, []);
 
-  const debouncedFetchStress = useDebounce(fetchStress, 2000);
+  const debouncedFetchStress = useDebounce(fetchStress, 3500);
   const handleInputChange = useCallback((text: string) => {
     debouncedFetchStress(text);
   }, [debouncedFetchStress]);

@@ -11,7 +11,62 @@ const ai = new GoogleGenAI({
   httpOptions: { headers: { "User-Agent": "aistudio-build" } },
 });
 
-const MODEL = "gemini-2.0-flash";
+const MODEL = "gemini-2.0-flash";       // full model — main /api/chat only
+const MODEL_LITE = "gemini-2.0-flash-lite"; // separate quota, higher RPM — all lightweight endpoints
+
+// ─── Exponential backoff retry ────────────────────────────────────────────────
+async function withRetry<T>(fn: () => Promise<T>, maxRetries = 3): Promise<T> {
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (e: any) {
+      const is429 = e?.status === 429 || String(e?.message).includes("429") || String(e?.message).includes("quota");
+      if (is429 && attempt < maxRetries) {
+        const delayMs = Math.pow(2, attempt) * 1200; // 1.2s → 2.4s → 4.8s
+        console.log(`[RATE LIMIT] 429 hit — retrying in ${delayMs}ms (attempt ${attempt + 1}/${maxRetries})`);
+        await new Promise(r => setTimeout(r, delayMs));
+        continue;
+      }
+      throw e;
+    }
+  }
+  throw new Error("Max retries exceeded");
+}
+
+// ─── Request semaphore (max 1 concurrent Gemini call) ────────────────────────
+let _semaphoreActive = false;
+const _semaphoreQueue: Array<() => void> = [];
+
+function acquireSemaphore(): Promise<void> {
+  return new Promise(resolve => {
+    if (!_semaphoreActive) {
+      _semaphoreActive = true;
+      resolve();
+    } else {
+      _semaphoreQueue.push(resolve);
+    }
+  });
+}
+
+function releaseSemaphore() {
+  const next = _semaphoreQueue.shift();
+  if (next) {
+    next();
+  } else {
+    _semaphoreActive = false;
+  }
+}
+
+// Wraps any Gemini call: queue it, run it, release when done
+async function geminiCall<T>(fn: () => Promise<T>): Promise<T> {
+  await acquireSemaphore();
+  try {
+    return await withRetry(fn);
+  } finally {
+    releaseSemaphore();
+  }
+}
+
 
 // ============================================================
 // REAL TOOL IMPLEMENTATIONS (Server-Side Business Logic)
@@ -223,8 +278,8 @@ async function startServer() {
       const { text } = req.body;
       if (!text || text.length < 10) return res.json({ stressScore: 0 });
 
-      const response = await ai.models.generateContent({
-        model: MODEL,
+      const response = await geminiCall(() => ai.models.generateContent({
+        model: MODEL_LITE,
         contents: `Analyze the cognitive load and stress level in this text. Return ONLY a JSON with "stressScore" (integer 0-10).
 0 = completely calm, simple single task.
 5 = moderate stress, a few competing priorities.
@@ -239,7 +294,7 @@ Text: "${text.substring(0, 400)}"`,
             required: ["stressScore"],
           },
         },
-      });
+      }));
 
       const data = JSON.parse(response.text || '{"stressScore":0}');
       res.json({ stressScore: Math.min(10, Math.max(0, Math.round(data.stressScore))) });
@@ -255,8 +310,8 @@ Text: "${text.substring(0, 400)}"`,
     try {
       const { command, currentSchedule, currentTasks, currentTime } = req.body;
 
-      const response = await ai.models.generateContent({
-        model: MODEL,
+      const response = await geminiCall(() => ai.models.generateContent({
+        model: MODEL_LITE,
         contents: `You are Last-Minute Life Saver's natural language command processor.
 Current time: ${currentTime}
 Current tasks: ${JSON.stringify(currentTasks, null, 2)}
@@ -297,7 +352,7 @@ Rules:
             required: ["schedule", "confirmation"],
           },
         },
-      });
+      }));
 
       const data = JSON.parse(response.text || "{}");
       res.json(data);
@@ -314,8 +369,8 @@ Rules:
     try {
       const { scenario, currentTasks, currentSchedule, currentTime } = req.body;
 
-      const response = await ai.models.generateContent({
-        model: MODEL,
+      const response = await geminiCall(() => ai.models.generateContent({
+        model: MODEL_LITE,
         contents: `You are Last-Minute Life Saver's scenario planner.
 Current time: ${currentTime}
 Current tasks: ${JSON.stringify(currentTasks, null, 2)}
@@ -358,7 +413,7 @@ Rules:
             required: ["analysis", "timeSaved", "schedule"],
           },
         },
-      });
+      }));
 
       const data = JSON.parse(response.text || "{}");
       res.json(data);
@@ -428,8 +483,8 @@ Rules:
 - Write an encouraging 1-sentence reply acknowledging the completion and what's next
 - Set atRisk=true for tasks already marked as such`;
 
-      const response = await ai.models.generateContent({
-        model: MODEL,
+      const response = await geminiCall(() => ai.models.generateContent({
+        model: MODEL_LITE,
         contents: prompt,
         config: {
           responseMimeType: "application/json",
@@ -472,7 +527,7 @@ Rules:
             required: ["tasks", "schedule", "reply"],
           },
         },
-      });
+      }));
 
       const data = JSON.parse(response.text || "{}");
       res.json(data);
@@ -520,13 +575,13 @@ Brain dump: """${text}"""`;
 
         let response: any;
         try {
-          response = await ai.models.generateContent({
+          response = await geminiCall(() => ai.models.generateContent({
             model: MODEL,
             contents,
             config: {
               tools: [{ functionDeclarations: TOOL_DECLARATIONS }],
             },
-          });
+          }));
         } catch (loopErr: any) {
           // Gemini throws when a turn produces no text AND no tool calls
           // (e.g. after function responses are fed back and model is "done")
@@ -598,7 +653,7 @@ Rules:
 - Task IDs must be short strings like "t1", "t2", etc.
 - Generate 2-3 specific, actionable 'suggestions' — smart tips tailored to THIS user's exact situation. Examples: warn if a task has barely enough time, suggest batching similar tasks, flag scheduling conflicts. Be specific, not generic.`;
 
-      const structuredResponse = await ai.models.generateContent({
+      const structuredResponse = await geminiCall(() => ai.models.generateContent({
         model: MODEL,
         contents: structuredPrompt,
         config: {
@@ -651,7 +706,7 @@ Rules:
             required: ["tasks", "schedule", "reply", "suggestions"],
           },
         },
-      });
+      }));
 
       const triageData = JSON.parse(structuredResponse.text || "{}");
       triageData.agentLog = agentLog;
