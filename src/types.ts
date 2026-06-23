@@ -6,13 +6,15 @@ export interface Task {
   category: TaskCategory;
   status: 'pending' | 'in-progress' | 'completed';
   estimatedMinutes?: number;
+  panicScore?: number;   // 0–10, computed by agent
+  atRisk?: boolean;      // true if deadline is dangerously close
 }
 
 export interface ExecutionBlock {
   id: string;
   title: string;
-  startTime: string; // ISO format
-  endTime: string; // ISO format
+  startTime: string; // ISO 8601
+  endTime: string;   // ISO 8601
   taskId?: string;
   type: 'work' | 'break' | 'buffer';
 }
@@ -27,4 +29,5 @@ export interface TriageResult {
   tasks: Task[];
   schedule: ExecutionBlock[];
   reply: string;
+  agentLog?: string[];
 }
