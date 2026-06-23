@@ -45,7 +45,7 @@ export function CommandBar({ onCommand, isProcessing }: CommandBarProps) {
     'move study session to 9pm',
     'add 30 min buffer before meeting',
     'skip the emails task',
-    'what's the minimum I need to do?',
+    "what's the minimum I need to do?",
   ];
 
   return (
