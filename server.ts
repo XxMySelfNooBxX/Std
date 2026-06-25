@@ -891,6 +891,20 @@ Rules:
   app.post("/api/chat", async (req, res) => {
     try {
       const { text, history, currentTime } = req.body;
+      const cleanText = (text || "").trim();
+      
+      // Conversational short-circuit for simple greetings
+      if (cleanText.length < 15 && !cleanText.match(/(need|due|tomorrow|exam|assignment|meeting|urgent|help|do|finish|task|work)/i)) {
+        return res.json({
+          tasks: [],
+          schedule: [],
+          reply: `Hi! I'm your Last-Minute Life Saver. Just brain dump everything you need to do, and I'll instantly triage your tasks and generate a realistic execution timeline!`,
+          suggestions: ["Type a list of tasks", "Include any deadlines"],
+          energyCurve: [],
+          agentLog: ["Conversational greeting detected. Bypassed triage loop."]
+        });
+      }
+
       const agentLog: string[] = [];
       const toolResults: Record<string, any> = {};
 
