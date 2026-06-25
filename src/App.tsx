@@ -15,6 +15,7 @@ import { AgentTrace } from './components/AgentTrace';
 import { EnergyCurve } from './components/EnergyCurve';
 import { ConfettiExplosion } from './components/ConfettiExplosion';
 import { OnboardingOverlay } from './components/OnboardingOverlay';
+import { AnimatedBackground } from './components/AnimatedBackground';
 import { Message, Task, ExecutionBlock, EnergyPoint } from './types';
 
 // Lazy load the 3D chart — it's heavy, only loads when user requests it
@@ -508,8 +509,9 @@ export default function App() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
-          className={theme + " flex flex-col md:flex-row h-screen bg-zinc-950 overflow-hidden font-sans text-zinc-100 selection:bg-indigo-500/30 selection:text-white w-full"}
+          className={theme + " flex flex-col md:flex-row h-screen bg-transparent overflow-hidden font-sans text-zinc-100 selection:bg-indigo-500/30 selection:text-white w-full"}
         >
+          <AnimatedBackground />
 
       {/* Left Panel: Chat + Particle Field */}
       <motion.div
