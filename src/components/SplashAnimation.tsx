@@ -40,6 +40,28 @@ export function SplashAnimation({ onComplete }: SplashAnimationProps) {
       transition={{ duration: 1.2, ease: "easeInOut" }}
       className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-[#000000] font-sans"
     >
+      {/* Subtle Ambient Background (Aurora Effect) */}
+      <div className="absolute inset-0 z-0 overflow-hidden opacity-60 mix-blend-screen pointer-events-none">
+        <motion.div
+          animate={{
+            scale: [1, 1.1, 1],
+            x: ['-5%', '5%', '-5%'],
+            y: ['-5%', '5%', '-5%'],
+          }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-[-20%] left-[-10%] w-[70vw] h-[70vw] rounded-full bg-indigo-900/30 blur-[120px]"
+        />
+        <motion.div
+          animate={{
+            scale: [1, 1.2, 1],
+            x: ['5%', '-5%', '5%'],
+            y: ['5%', '-5%', '5%'],
+          }}
+          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute bottom-[-20%] right-[-10%] w-[60vw] h-[60vw] rounded-full bg-purple-900/20 blur-[120px]"
+        />
+      </div>
+
       <div className="relative z-10 flex flex-col items-center justify-center">
         
         {/* Apple-style minimalist logo reveal */}
@@ -83,10 +105,10 @@ export function SplashAnimation({ onComplete }: SplashAnimationProps) {
         <AnimatePresence>
           {(phase === 'text' || phase === 'done') && (
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.4 }}
-              transition={{ duration: 2.0, delay: 1.5 }}
-              className="text-[9px] text-zinc-500 font-mono tracking-widest uppercase mt-4"
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 0.8, y: 0 }}
+              transition={{ duration: 2.0, delay: 0.8 }}
+              className="text-[10px] text-zinc-400 font-mono tracking-widest uppercase mt-4"
             >
               Powered by Gemini
             </motion.div>
