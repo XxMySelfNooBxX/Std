@@ -2,7 +2,8 @@ import { motion } from 'motion/react';
 import { useTheme } from '../hooks/useTheme';
 
 export function AnimatedBackground() {
-  const { isDark } = useTheme();
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   
   if (!isDark) {
     return (
