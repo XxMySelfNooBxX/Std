@@ -535,7 +535,7 @@ export default function App() {
 
       {/* Right Panel: Dashboard */}
       <motion.div
-        className="flex-1 h-[50vh] md:h-full overflow-y-auto relative scroll-smooth"
+        className="flex-1 h-[50vh] md:h-full overflow-y-auto overflow-x-hidden relative scroll-smooth"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
