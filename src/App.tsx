@@ -14,6 +14,7 @@ import { WhatIf } from './components/WhatIf';
 import { AgentTrace } from './components/AgentTrace';
 import { EnergyCurve } from './components/EnergyCurve';
 import { ConfettiExplosion } from './components/ConfettiExplosion';
+import { SplashAnimation } from './components/SplashAnimation';
 import { OnboardingOverlay } from './components/OnboardingOverlay';
 import { AnimatedBackground } from './components/AnimatedBackground';
 import { Message, Task, ExecutionBlock, EnergyPoint } from './types';
@@ -92,12 +93,6 @@ export default function App() {
   useEffect(() => {
     (window as any).toggleTheme = toggleTheme;
   }, [toggleTheme]);
-
-  // Splash screen timer
-  useEffect(() => {
-    const timer = setTimeout(() => setShowSplash(false), 1500);
-    return () => clearTimeout(timer);
-  }, []);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -477,38 +472,17 @@ export default function App() {
 
   const agentBusy = isProcessing || isReTriaging;
   const agentStateLabel = isReTriaging ? 'Re-triaging schedule...' : processingState;
-
   return (
     <>
     <AnimatePresence mode="wait">
       {showSplash ? (
-        <motion.div
-          key="splash"
-          initial={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.5 }}
-          className={theme + " flex items-center justify-center h-screen bg-zinc-950"}
-        >
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 1.1, opacity: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            className="flex flex-col items-center gap-4"
-          >
-            <div className="w-16 h-16 rounded-2xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center shadow-[0_0_40px_rgba(99,102,241,0.2)]">
-              <span className="text-3xl animate-pulse">⚡</span>
-            </div>
-            <h1 className="text-2xl font-bold tracking-tight text-zinc-100">Last-Minute Life Saver</h1>
-            <div className="text-[10px] text-indigo-400 font-mono tracking-widest uppercase mt-4">Powered by Gemini</div>
-          </motion.div>
-        </motion.div>
+        <SplashAnimation onComplete={() => setShowSplash(false)} />
       ) : (
         <motion.div
           key="main-app"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ type: "spring", stiffness: 300, damping: 25, mass: 1, duration: 0.5 }}
           className={theme + " flex flex-col md:flex-row h-screen bg-transparent overflow-hidden font-sans text-zinc-100 selection:bg-indigo-500/30 selection:text-white w-full"}
         >
           <AnimatedBackground />
