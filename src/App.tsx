@@ -593,6 +593,7 @@ export default function App() {
                 <WhatIf
                   tasks={tasks}
                   schedule={schedule}
+                  disabled={tasks.filter(t => t.status !== 'completed').length === 0}
                   onApply={(newSchedule, confirmation) => {
                     setSchedule(newSchedule);
                     setMessages(prev => [...prev, {

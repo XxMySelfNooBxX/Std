@@ -7,9 +7,10 @@ interface WhatIfProps {
   tasks: Task[];
   schedule: ExecutionBlock[];
   onApply: (newSchedule: ExecutionBlock[], confirmation: string) => void;
+  disabled?: boolean;
 }
 
-export function WhatIf({ tasks, schedule, onApply }: WhatIfProps) {
+export function WhatIf({ tasks, schedule, onApply, disabled }: WhatIfProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -60,10 +61,11 @@ export function WhatIf({ tasks, schedule, onApply }: WhatIfProps) {
       {/* Trigger */}
       <button
         onClick={() => { setIsOpen(true); setTimeout(() => inputRef.current?.focus(), 50); }}
-        className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-900 border border-white/10 rounded-lg text-xs text-zinc-500 hover:text-amber-300 hover:border-amber-500/30 hover:bg-zinc-800 transition-all group"
-        title="What-if scenario planner"
+        disabled={disabled}
+        className={`flex items-center gap-1.5 px-3 py-1.5 bg-zinc-900 border border-white/10 rounded-lg text-xs text-zinc-500 transition-all group ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:text-amber-300 hover:border-amber-500/30 hover:bg-zinc-800'}`}
+        title={disabled ? "Add tasks to explore scenarios" : "What-if scenario planner"}
       >
-        <Lightbulb className="w-3 h-3 text-amber-500/70 group-hover:text-amber-400" />
+        <Lightbulb className={`w-3 h-3 ${disabled ? 'text-zinc-600' : 'text-amber-500/70 group-hover:text-amber-400'}`} />
         <span className="hidden sm:inline">What if?</span>
       </button>
 
