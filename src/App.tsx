@@ -25,38 +25,14 @@ const PanicChart3D = lazy(() => import('./components/PanicChart3D').then(m => ({
 const SESSION_KEY = 'lmls-session-v2';
 
 // ─── Demo Data ──────────────────────────────────────────────────────────────
-const DEMO_TASKS: Task[] = [
-  { id: 't1', title: 'Finish CS assignment (due 9pm tonight)', category: 'Urgent & Critical', status: 'pending', estimatedMinutes: 120, panicScore: 10, atRisk: true },
-  { id: 't2', title: 'Study for tomorrow\'s Economics exam', category: 'Urgent & Critical', status: 'pending', estimatedMinutes: 90, panicScore: 9, atRisk: false },
-  { id: 't3', title: 'Group project meeting at 6pm — prepare slides', category: 'High Dependency', status: 'pending', estimatedMinutes: 60, panicScore: 7, atRisk: false },
-  { id: 't4', title: 'Reply to 3 urgent emails from professor', category: 'Micro-Tasks', status: 'pending', estimatedMinutes: 15, panicScore: 4, atRisk: false },
-  { id: 't5', title: 'Pay electricity bill online', category: 'Micro-Tasks', status: 'pending', estimatedMinutes: 10, panicScore: 3, atRisk: false },
-];
+const DEMO_TASKS: Task[] = [];
 
 function buildDemoSchedule(): ExecutionBlock[] {
-  const now = new Date();
-  now.setMinutes(Math.ceil(now.getMinutes() / 15) * 15, 0, 0);
-  const add = (m: number) => new Date(now.getTime() + m * 60000);
-  let offset = 0;
-  const block = (id: string, title: string, taskId: string | undefined, type: 'work' | 'break' | 'buffer', dur: number): ExecutionBlock => {
-    const start = add(offset); offset += dur;
-    return { id, title, startTime: start.toISOString(), endTime: add(offset).toISOString(), taskId, type };
-  };
-  return [
-    block('s1', 'CS Assignment Sprint', 't1', 'work', 90),
-    block('s2', 'Recovery Break', undefined, 'break', 10),
-    block('s3', 'Finish CS Assignment', 't1', 'work', 30),
-    block('s4', 'Quick Wins: Emails + Bill', 't4', 'work', 25),
-    block('s5', 'Buffer Break', undefined, 'break', 10),
-    block('s6', 'Group Project Slides', 't3', 'work', 60),
-    block('s7', 'Economics Exam Study', 't2', 'work', 90),
-  ];
+  return [];
 }
 
 const DEMO_MESSAGES: Message[] = [
   { id: 'sys-1', role: 'assistant', content: 'I am your Last-Minute Life Saver. Brain dump everything you need to do, and I will instantly triage your tasks and generate a realistic execution timeline.' },
-  { id: 'demo-user', role: 'user', content: 'ok I have a CS assignment due at 9pm that I haven\'t started, need to reply to 3 urgent professor emails, group project meeting at 6pm I need to prep slides for, pay electricity bill, and study for tomorrow\'s econ exam' },
-  { id: 'demo-ai', role: 'assistant', content: '⚠️ Your CS assignment is AT RISK — you have just enough time if you start now. I\'ve triaged everything and built a survival timeline. The emails and bill are 25 minutes combined — knock those out after your first work sprint. You can do this.' },
 ];
 
 // ─── Debounce hook ───────────────────────────────────────────────────────────
