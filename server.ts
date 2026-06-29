@@ -607,7 +607,7 @@ Text: "${text.substring(0, 400)}"`,
 
       const response = await geminiCall(() => ai.models.generateContent({
         model: MODEL_LITE,
-        contents: `You are Last-Minute Life Saver's natural language command processor.
+        contents: `You are PanicMode Planner's natural language command processor.
 Current time: ${currentTime}
 Current tasks: ${JSON.stringify(currentTasks, null, 2)}
 Current schedule: ${JSON.stringify(currentSchedule, null, 2)}
@@ -669,7 +669,7 @@ Rules:
 
       const response = await geminiCall(() => ai.models.generateContent({
         model: MODEL_LITE,
-        contents: `You are Last-Minute Life Saver's scenario planner.
+        contents: `You are PanicMode Planner's scenario planner.
 Current time: ${currentTime}
 Current tasks: ${JSON.stringify(currentTasks, null, 2)}
 Current schedule: ${JSON.stringify(currentSchedule, null, 2)}
@@ -734,7 +734,7 @@ Rules:
 
       const response = await ai.models.generateContent({
         model: MODEL,
-        contents: `You are "Last-Minute Life Saver" doing a proactive check-in with an overwhelmed user.
+        contents: `You are "PanicMode Planner" doing a proactive check-in with an overwhelmed user.
 Current time: ${currentTime}
 The user has been working for ${elapsedMinutes} minutes.
 Current task they should be on: "${currentTaskTitle}"
@@ -773,7 +773,7 @@ Generate a SHORT (1-2 sentences MAX), direct, energetic check-in message.
     try {
       const { remainingTasks, completedTaskTitle, currentTime } = req.body;
 
-      const prompt = `You are "Last-Minute Life Saver". A task was just completed: "${completedTaskTitle}".
+      const prompt = `You are "PanicMode Planner". A task was just completed: "${completedTaskTitle}".
 Current time: ${currentTime}.
 
 Now regenerate an optimized schedule for ONLY these remaining tasks:
@@ -850,7 +850,7 @@ Rules:
     try {
       const response = await geminiCall(() => ai.models.generateContent({
         model: MODEL_LITE,
-        contents: `You are Last-Minute Life Saver's task decomposition agent.
+        contents: `You are PanicMode Planner's task decomposition agent.
 Break down the following task into 2-4 actionable subtasks.
 
 Task: "${taskTitle}"
@@ -908,7 +908,7 @@ Rules:
         return res.json({
           tasks: [],
           schedule: [],
-          reply: `Hi! I'm your Last-Minute Life Saver. Just brain dump everything you need to do, and I'll instantly triage your tasks and generate a realistic execution timeline!`,
+          reply: `Hi! I'm your PanicMode Planner. Just brain dump everything you need to do, and I'll instantly triage your tasks and generate a realistic execution timeline!`,
           suggestions: ["Type a list of tasks", "Include any deadlines"],
           energyCurve: [],
           agentLog: ["Conversational greeting detected. Bypassed triage loop."]
@@ -923,7 +923,7 @@ Rules:
         ? `\n\nPrevious conversation context:\n${history.map((m: any) => `${m.role === 'user' ? 'User' : 'Agent'}: ${m.content}`).join('\n')}`
         : '';
 
-      const initialPrompt = `You are "Last-Minute Life Saver" — a proactive AI productivity agent for overwhelmed users.
+      const initialPrompt = `You are "PanicMode Planner" — a proactive AI productivity agent for overwhelmed users.
 Current time: ${currentTime}${historyContext}
 
 INSTRUCTIONS:
@@ -1011,7 +1011,7 @@ Brain dump: """${text}"""`;
       const panicData = (toolResults["prioritize_by_deadline"] as any[]) || [];
       const conflictData = toolResults["check_schedule_conflicts"] || {};
 
-      const structuredPrompt = `You are generating the final structured triage result for Last-Minute Life Saver.
+      const structuredPrompt = `You are generating the final structured triage result for PanicMode Planner.
 
 Agent analysis summary:
 - Tool results: ${JSON.stringify(toolResults, null, 2)}

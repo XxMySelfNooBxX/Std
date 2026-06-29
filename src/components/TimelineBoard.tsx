@@ -13,7 +13,7 @@ function generateICS(block: ExecutionBlock, task?: Task): string {
     `DTSTART:${fmt(block.startTime)}`,
     `DTEND:${fmt(block.endTime)}`,
     `SUMMARY:${block.title}`,
-    task ? `DESCRIPTION:Focus: ${task.title}` : 'DESCRIPTION:Scheduled by Last-Minute Life Saver',
+    task ? `DESCRIPTION:Focus: ${task.title}` : 'DESCRIPTION:Scheduled by PanicMode Planner',
     'END:VEVENT', 'END:VCALENDAR',
   ].join('\r\n');
 }

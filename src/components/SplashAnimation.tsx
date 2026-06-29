@@ -95,7 +95,7 @@ export function SplashAnimation({ onComplete }: SplashAnimationProps) {
                 }}
                 className="text-2xl font-light tracking-wide text-white/90"
               >
-                Last-Minute Life Saver
+                PanicMode Planner
               </motion.h1>
             )}
           </AnimatePresence>

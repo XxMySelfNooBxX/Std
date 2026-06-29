@@ -121,7 +121,7 @@ export function ChatInterface({ messages, onSendMessage, onInputChange, isProces
             stressScore >= 6 ? 'bg-red-500 animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.6)]' :
             'bg-red-500 animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.4)]'
           }`} />
-          <h1 className="text-lg font-bold tracking-tight text-zinc-100">Last-Minute Life Saver</h1>
+          <h1 className="text-lg font-bold tracking-tight text-zinc-100">PanicMode Planner</h1>
         </div>
         <div className="flex items-center justify-between">
           <p className="text-xs text-zinc-400">Processing frantic inputs in real-time...</p>

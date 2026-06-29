@@ -32,7 +32,7 @@ function buildDemoSchedule(): ExecutionBlock[] {
 }
 
 const DEMO_MESSAGES: Message[] = [
-  { id: 'sys-1', role: 'assistant', content: 'I am your Last-Minute Life Saver. Brain dump everything you need to do, and I will instantly triage your tasks and generate a realistic execution timeline.' },
+  { id: 'sys-1', role: 'assistant', content: 'I am your PanicMode Planner. Brain dump everything you need to do, and I will instantly triage your tasks and generate a realistic execution timeline.' },
 ];
 
 // ─── Debounce hook ───────────────────────────────────────────────────────────
